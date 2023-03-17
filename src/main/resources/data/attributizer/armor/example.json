@@ -1,0 +1,15 @@
+{
+  "minecraft:leather_chestplate":[
+    {
+      "attribute": "minecraft:generic.max_health",
+      "modify": 10,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "modify": -0.1,
+      "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ]
+}
