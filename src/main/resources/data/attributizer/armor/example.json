@@ -11,5 +11,12 @@
       "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
       "operation": "MULTIPLY_TOTAL"
     }
+  ],
+  "minecraft:turtle_helmet":[
+    {
+      "attribute": "minecraft:generic.max_health",
+      "modify": 1,
+      "operation": "ADDITION"
+    }
   ]
 }
