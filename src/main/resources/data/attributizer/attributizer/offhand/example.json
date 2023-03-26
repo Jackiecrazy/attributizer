@@ -1,0 +1,22 @@
+{
+  "modid:awesome_shield":[
+    {
+      "attribute": "minecraft:generic.armor",
+      "modify": 10,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "modify": 1,
+      "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ],
+  "anothermod:healthy_crossbow":[
+    {
+      "attribute": "minecraft:generic.max_health",
+      "modify": 1,
+      "operation": "ADDITION"
+    }
+  ]
+}

@@ -7,15 +7,13 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShieldItem;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
-public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
+public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
     public static final UUID[] MODIFIERS = {
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553da"),
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553db"),
@@ -27,12 +25,12 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
     public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
 
-    public ArmorAttributizer() {
-        super(GSON, "attributizer/armor");
+    public MainHandAttributizer() {
+        super(GSON, "attributizer/mainhand");
     }
 
     public static void register(AddReloadListenerEvent event) {
-        event.addListener(new ArmorAttributizer());
+        event.addListener(new MainHandAttributizer());
     }
 
     @Override
@@ -45,7 +43,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                 ResourceLocation i = new ResourceLocation(name);
                 Item item = ForgeRegistries.ITEMS.getValue(i);
                 if (item == null) {
-                    Attributizer.LOGGER.debug(name + " is not a registered item!");
+                    //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
                 JsonArray array = entry.getValue().getAsJsonArray();
@@ -55,7 +53,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                         final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
                         Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
                         if (a == null) {
-                            Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
+                            //Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
 
@@ -65,10 +63,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                             uid = UUID.fromString(u);
                         } catch (Exception ignored) {
                             //have to grab the uuid haiyaaa
-                            if (item instanceof ArmorItem armor) {
-                                uid = MODIFIERS[armor.getSlot().getIndex()];
-                            } else if (item instanceof ShieldItem) uid = MODIFIERS[5];
-                            else uid = MODIFIERS[4];
+                            uid = MODIFIERS[4];
                         }
                         double modify = obj.get("modify").getAsDouble();
                         String type = obj.get("operation").getAsString();

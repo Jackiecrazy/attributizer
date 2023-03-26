@@ -1,5 +1,5 @@
 {
-  "minecraft:leather_chestplate":[
+  "modid:healthy_chestplate":[
     {
       "attribute": "minecraft:generic.max_health",
       "modify": 10,
@@ -12,7 +12,7 @@
       "operation": "MULTIPLY_TOTAL"
     }
   ],
-  "minecraft:turtle_helmet":[
+  "anothermod:second_helmet":[
     {
       "attribute": "minecraft:generic.max_health",
       "modify": 1,

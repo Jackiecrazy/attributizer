@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
@@ -38,12 +37,22 @@ public class Attributizer {
         @SubscribeEvent
         public static void onJsonListener(AddReloadListenerEvent event) {
             ArmorAttributizer.register(event);
+            MainHandAttributizer.register(event);
+            OffhandAttributizer.register(event);
         }
 
         @SubscribeEvent
         public static void items(ItemAttributeModifierEvent e) {
-            if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (!e.getOriginalModifiers().isEmpty() || (!(e.getItemStack().getItem() instanceof ArmorItem) && e.getSlotType() == EquipmentSlot.OFFHAND))) {//presumably this is the correct equipment slot
+            if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (!e.getOriginalModifiers().isEmpty())) {//presumably this is the correct equipment slot
                 Map<Attribute, List<AttributeModifier>> map = ArmorAttributizer.MAP.get(e.getItemStack().getItem());
+                map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+            }
+            if (OffhandAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (e.getSlotType() == EquipmentSlot.OFFHAND)) {//presumably this is the correct equipment slot
+                Map<Attribute, List<AttributeModifier>> map = OffhandAttributizer.MAP.get(e.getItemStack().getItem());
+                map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+            }
+            if (MainHandAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (e.getSlotType() == EquipmentSlot.MAINHAND)) {//presumably this is the correct equipment slot
+                Map<Attribute, List<AttributeModifier>> map = MainHandAttributizer.MAP.get(e.getItemStack().getItem());
                 map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
             }
         }
