@@ -7,9 +7,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.*;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -44,7 +42,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                 final String name = entry.getKey();
                 ResourceLocation i = new ResourceLocation(name);
                 Item item = ForgeRegistries.ITEMS.getValue(i);
-                if (item == null) {
+                if (item == null || item == Items.AIR) {
                     Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }

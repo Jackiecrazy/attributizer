@@ -8,6 +8,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -42,7 +43,7 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                 final String name = entry.getKey();
                 ResourceLocation i = new ResourceLocation(name);
                 Item item = ForgeRegistries.ITEMS.getValue(i);
-                if (item == null) {
+                if (item == null || item == Items.AIR) {
                     //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }

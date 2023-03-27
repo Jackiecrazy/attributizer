@@ -43,6 +43,7 @@ public class Attributizer {
 
         @SubscribeEvent
         public static void items(ItemAttributeModifierEvent e) {
+            if (e.getItemStack().isEmpty()) return;
             if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (!e.getOriginalModifiers().isEmpty())) {//presumably this is the correct equipment slot
                 Map<Attribute, List<AttributeModifier>> map = ArmorAttributizer.MAP.get(e.getItemStack().getItem());
                 map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
