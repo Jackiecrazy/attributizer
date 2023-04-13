@@ -1,0 +1,31 @@
+{
+  "modid:blind_rager":[
+    {
+      "attribute": "minecraft:generic.follow_range",
+      "modify": -1,
+      "operation": "MULTIPLY_TOTAL"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "min": 3,
+      "max": 6,
+      "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
+      "operation": "ADDITION"
+    }
+  ],
+  "anothermod:chonky_boi":[
+    {
+      "attribute": "minecraft:generic.max_health",
+      "modify": 99,
+      "operation": "SET_BASE"
+    }
+  ],
+  "all":[
+    {
+      "attribute": "minecraft:generic.luck",
+      "min": -1,
+      "max": 1,
+      "operation": "ADDITION"
+    }
+  ]
+}

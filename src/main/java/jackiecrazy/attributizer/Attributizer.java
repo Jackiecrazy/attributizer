@@ -2,11 +2,16 @@ package jackiecrazy.attributizer;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,6 +44,29 @@ public class Attributizer {
             ArmorAttributizer.register(event);
             MainHandAttributizer.register(event);
             OffhandAttributizer.register(event);
+            EntityAttributizer.register(event);
+        }
+
+        @SubscribeEvent
+        public static void mobs(EntityJoinLevelEvent e) {
+            if (e.getEntity() instanceof LivingEntity elb) {
+                if (!(elb instanceof Player))
+                    EntityAttributizer.GLOBALMAP.forEach((k, v) -> v.forEach(am -> {
+                        AttributeInstance ai = elb.getAttribute(k);
+                        if (ai != null) {
+                            am.applyModifier(ai);
+                        }
+                    }));
+                if (EntityAttributizer.MAP.containsKey(e.getEntity().getType())) {
+                    Map<Attribute, List<EntityAttributizer.AttributeMod>> map = EntityAttributizer.MAP.get(elb.getType());
+                    map.forEach((k, v) -> v.forEach(am -> {
+                        AttributeInstance ai = elb.getAttribute(k);
+                        if (ai != null) {
+                            am.applyModifier(ai);
+                        }
+                    }));
+                }
+            }
         }
 
         @SubscribeEvent
