@@ -4,6 +4,8 @@ import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -24,6 +26,7 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
     };
     public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
+    public static final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier>>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
 
     public OffhandAttributizer() {
@@ -40,11 +43,17 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
         object.forEach((key, value) -> {
             JsonObject file = value.getAsJsonObject();
             file.entrySet().forEach(entry -> {
-                final String name = entry.getKey();
+                boolean isTag = false;
+                String name = entry.getKey();
+                Item item = null;
+                if (name.startsWith("#")) {//tag
+                    isTag = true;
+                    name = name.substring(1);
+                }
                 ResourceLocation i = new ResourceLocation(name);
-                Item item = ForgeRegistries.ITEMS.getValue(i);
-                if (item == null || item == Items.AIR) {
-                    //Attributizer.LOGGER.debug(name + " is not a registered item!");
+                item = ForgeRegistries.ITEMS.getValue(i);
+                if ((item == null || item == Items.AIR) && !isTag) {
+                    Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
                 JsonArray array = entry.getValue().getAsJsonArray();
@@ -54,10 +63,12 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                         final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
                         Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
                         if (a == null) {
-                            //Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
+                            Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
 
+                        double modify = obj.get("modify").getAsDouble();
+                        String type = obj.get("operation").getAsString();
                         UUID uid;
                         try {
                             final String u = obj.get("uuid").getAsString();
@@ -66,14 +77,22 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                             //have to grab the uuid haiyaaa
                             uid = MODIFIERS[5];
                         }
-                        double modify = obj.get("modify").getAsDouble();
-                        String type = obj.get("operation").getAsString();
+
                         AttributeModifier am = new AttributeModifier(uid, "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
-                        MAP.putIfAbsent(item, new HashMap<>());
-                        Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
-                        sub.putIfAbsent(a, new ArrayList<>());
-                        sub.get(a).add(am);
-                        MAP.put(item, sub);
+                        if(isTag){
+                            final TagKey<Item> tag = ItemTags.create(i);
+                            ARCHETYPES.putIfAbsent(tag, new HashMap<>());
+                            Map<Attribute, List<AttributeModifier>> sub = ARCHETYPES.get(tag);
+                            sub.putIfAbsent(a, new ArrayList<>());
+                            sub.get(a).add(am);
+                            ARCHETYPES.put(tag, sub);
+                        }else {
+                            MAP.putIfAbsent(item, new HashMap<>());
+                            Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
+                            sub.putIfAbsent(a, new ArrayList<>());
+                            sub.get(a).add(am);
+                            MAP.put(item, sub);
+                        }
                     } catch (Exception x) {
                         Attributizer.LOGGER.error("incomplete or malformed json under " + name + "!");
                         x.printStackTrace();

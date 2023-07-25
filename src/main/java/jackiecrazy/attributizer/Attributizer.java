@@ -72,18 +72,35 @@ public class Attributizer {
         @SubscribeEvent
         public static void items(ItemAttributeModifierEvent e) {
             if (e.getItemStack().isEmpty()) return;
+            //armor
             if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (!e.getOriginalModifiers().isEmpty())) {//presumably this is the correct equipment slot
                 Map<Attribute, List<AttributeModifier>> map = ArmorAttributizer.MAP.get(e.getItemStack().getItem());
-                map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+                apply(e, map);
             }
+            //tag based armor
+            ArmorAttributizer.ARCHETYPES.forEach((k, v) -> {
+                if (e.getItemStack().is(k)) {
+                    v.forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
+                }
+            });
             if (OffhandAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (e.getSlotType() == EquipmentSlot.OFFHAND)) {//presumably this is the correct equipment slot
                 Map<Attribute, List<AttributeModifier>> map = OffhandAttributizer.MAP.get(e.getItemStack().getItem());
-                map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+                apply(e, map);
             }
+            OffhandAttributizer.ARCHETYPES.forEach((k, v) -> {
+                if (e.getItemStack().is(k)) apply(e, v);
+            });
             if (MainHandAttributizer.MAP.containsKey(e.getItemStack().getItem()) && (e.getSlotType() == EquipmentSlot.MAINHAND)) {//presumably this is the correct equipment slot
                 Map<Attribute, List<AttributeModifier>> map = MainHandAttributizer.MAP.get(e.getItemStack().getItem());
-                map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+                apply(e, map);
             }
+            MainHandAttributizer.ARCHETYPES.forEach((k, v) -> {
+                if (e.getItemStack().is(k)) apply(e, v);
+            });
+        }
+
+        private static void apply(ItemAttributeModifierEvent e, Map<Attribute, List<AttributeModifier>> map) {
+            map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
         }
     }
 }
