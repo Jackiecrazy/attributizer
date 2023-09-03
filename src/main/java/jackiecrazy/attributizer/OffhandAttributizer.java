@@ -49,6 +49,8 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                 if (name.startsWith("#")) {//tag
                     isTag = true;
                     name = name.substring(1);
+                    if (!name.contains(":"))
+                        name = "attributizer:" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);

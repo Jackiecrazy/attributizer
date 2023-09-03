@@ -48,11 +48,13 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                 Item item = null;
                 if (name.startsWith("#")) {//tag
                     isTag = true;
-                    name = name.substring(1);
+                    name = name.replace('#', ' ').trim();
+                    if (!name.contains(":"))
+                        name = "attributizer:" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
-                if (item == null || item == Items.AIR) {
+                if (!isTag && (item == null || item == Items.AIR)) {
                     //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
@@ -79,14 +81,14 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                         }
 
                         AttributeModifier am = new AttributeModifier(uid, "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
-                        if(isTag){
+                        if (isTag) {
                             final TagKey<Item> tag = ItemTags.create(i);
                             ARCHETYPES.putIfAbsent(tag, new HashMap<>());
                             Map<Attribute, List<AttributeModifier>> sub = ARCHETYPES.get(tag);
                             sub.putIfAbsent(a, new ArrayList<>());
                             sub.get(a).add(am);
                             ARCHETYPES.put(tag, sub);
-                        }else {
+                        } else {
                             MAP.putIfAbsent(item, new HashMap<>());
                             Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
                             sub.putIfAbsent(a, new ArrayList<>());

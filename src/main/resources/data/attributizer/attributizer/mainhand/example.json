@@ -18,5 +18,12 @@
       "modify": 1,
       "operation": "ADDITION"
     }
+  ],
+  "#random:heavy_object":[
+    {
+      "attribute": "minecraft:generic.knockback_resistance",
+      "modify": 1,
+      "operation": "MULTIPLY_BASE"
+    }
   ]
 }
