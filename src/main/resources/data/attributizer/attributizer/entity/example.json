@@ -20,6 +20,14 @@
       "operation": "SET_BASE"
     }
   ],
+  "#minecraft:raiders":[
+    {
+      "attribute": "minecraft:generic.luck",
+      "min": 0,
+      "max": 1,
+      "operation": "ADDITION"
+    }
+  ],
   "all":[
     {
       "attribute": "minecraft:generic.luck",

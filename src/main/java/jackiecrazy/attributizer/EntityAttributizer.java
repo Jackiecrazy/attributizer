@@ -1,9 +1,12 @@
 package jackiecrazy.attributizer;
 
 import com.google.gson.*;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
+import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,11 +23,12 @@ import java.util.*;
 public class EntityAttributizer extends SimpleJsonResourceReloadListener {
     public static final UUID MODIFIER = UUID.fromString("a516026a-bee2-4014-bcb6-b6a5776663da");
     public static final Map<Attribute, List<AttributeMod>> GLOBALMAP = new HashMap<>();
-    public static final Map<EntityType, Map<Attribute, List<AttributeMod>>> MAP = new HashMap<>();
+    public static final Map<EntityType<?>, Map<Attribute, List<AttributeMod>>> MAP = new HashMap<>();
+    public static final Map<TagKey<EntityType<?>>, Map<Attribute, List<AttributeMod>>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
 
     public EntityAttributizer() {
-        super(GSON, "attributizer/offhand");
+        super(GSON, "attributizer/entity");
     }
 
     public static void register(AddReloadListenerEvent event) {
@@ -37,7 +41,14 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
         object.forEach((key, value) -> {
             JsonObject file = value.getAsJsonObject();
             file.entrySet().forEach(entry -> {
-                final String name = entry.getKey();
+                String name = entry.getKey();
+                boolean isTag=false;
+                if (name.startsWith("#")) {//tag
+                    isTag = true;
+                    name = name.substring(1);
+                    if (!name.contains(":"))
+                        name = "attributizer:" + name;
+                }
                 JsonArray array = entry.getValue().getAsJsonArray();
                 for (JsonElement e : array) {
                     try {
@@ -69,14 +80,24 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                             GLOBALMAP.putIfAbsent(a, new ArrayList<>());
                             GLOBALMAP.get(a).add(am);
                         }
-                        ResourceLocation i = new ResourceLocation(name);
-                        EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
-                        if (mob != null) {
-                            MAP.putIfAbsent(mob, new HashMap<>());
-                            Map<Attribute, List<AttributeMod>> sub = MAP.get(mob);
+                        else if(isTag){
+                            TagKey<EntityType<?>> tag= TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(name));
+                            ARCHETYPES.putIfAbsent(tag, new HashMap<>());
+                            Map<Attribute, List<AttributeMod>> sub = ARCHETYPES.get(tag);
                             sub.putIfAbsent(a, new ArrayList<>());
                             sub.get(a).add(am);
-                            MAP.put(mob, sub);
+                            ARCHETYPES.put(tag, sub);
+                        }
+                        else {
+                            ResourceLocation i = new ResourceLocation(name);
+                            EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
+                            if (mob != null) {
+                                MAP.putIfAbsent(mob, new HashMap<>());
+                                Map<Attribute, List<AttributeMod>> sub = MAP.get(mob);
+                                sub.putIfAbsent(a, new ArrayList<>());
+                                sub.get(a).add(am);
+                                MAP.put(mob, sub);
+                            }
                         }
 
                     } catch (Exception x) {

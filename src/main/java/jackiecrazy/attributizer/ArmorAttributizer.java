@@ -1,7 +1,13 @@
 package jackiecrazy.attributizer;
 
+import com.google.common.collect.Maps;
 import com.google.gson.*;
+import jackiecrazy.attributizer.networking.AttributeChannel;
+import jackiecrazy.attributizer.networking.SyncArmorTagDataPacket;
+import jackiecrazy.attributizer.networking.SyncItemDataPacket;
+import jackiecrazy.attributizer.networking.SyncTagDataPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.ItemTags;
@@ -11,9 +17,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
     public static final UUID[] MODIFIERS = {
@@ -25,8 +33,26 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
     };
     public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
+    public static final Map<Item, TagKey<Item>> CACHEMAP = new HashMap<>();
     public static final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
+
+    public static void clientDataOverride(Map<Item, Map<Attribute, List<AttributeModifier>>> server) {
+        MAP.putAll(server);
+    }
+
+    public static void clientTagOverride(Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> server) {
+        ARCHETYPES.putAll(server);
+    }
+
+    public static void sendItemData(ServerPlayer p) {
+        //duplicated removed automatically
+        Set<String> paths = MAP.keySet().stream().map(a -> ForgeRegistries.ITEMS.getKey(a).getNamespace()).collect(Collectors.toSet());
+        for (String namespace : paths)
+            AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(2, Maps.filterEntries(MAP, a -> ForgeRegistries.ITEMS.getKey(a.getKey()).getNamespace().equals(namespace))));
+        //CombatChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(new HashMap<>(combatList)));
+        AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncArmorTagDataPacket(ARCHETYPES));
+    }
 
     public ArmorAttributizer() {
         super(GSON, "attributizer/armor");
@@ -39,6 +65,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager rm, ProfilerFiller profiler) {
         MAP.clear();
+        CACHEMAP.clear();
         object.forEach((key, value) -> {
             JsonObject file = value.getAsJsonObject();
             file.entrySet().forEach(entry -> {
