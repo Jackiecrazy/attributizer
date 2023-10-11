@@ -124,7 +124,7 @@ public class Attributizer {
                     apply(e, map);
                 }
                 //tag based armor
-                if (ArmorAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
+                else if (ArmorAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     ArmorAttributizer.CACHEMAP.computeIfPresent(e.getItemStack().getItem(), (item, tag) -> {
                         ArmorAttributizer.ARCHETYPES.computeIfPresent(tag, (tag1, attr) -> {
                                     attr.forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
@@ -133,10 +133,10 @@ public class Attributizer {
                         );
                         return tag;
                     });
-                else ArmorAttributizer.ARCHETYPES.forEach((k, v) -> {
-                    if (e.getItemStack().is(k)) {
-                        v.forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
-                        ArmorAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k);
+                else ArmorAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
+                    if (e.getItemStack().is(k.getKey())) {
+                        k.getValue().forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
+                        ArmorAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
                     }
                 });
             }
@@ -145,13 +145,11 @@ public class Attributizer {
                     Map<Attribute, List<AttributeModifier>> map = OffhandAttributizer.MAP.get(e.getItemStack().getItem());
                     apply(e, map);
                 }
-                if (OffhandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
+                else if (OffhandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     apply(e, OffhandAttributizer.ARCHETYPES.get(OffhandAttributizer.CACHEMAP.get(e.getItemStack().getItem())));
-                else OffhandAttributizer.ARCHETYPES.forEach((k, v) -> {
-                    if (e.getItemStack().is(k)) {
-                        apply(e, v);
-                        OffhandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k);
-                    }
+                else OffhandAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
+                    apply(e, k.getValue());
+                    OffhandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
                 });
             }
             if ((e.getSlotType() == EquipmentSlot.MAINHAND)) {
@@ -159,14 +157,13 @@ public class Attributizer {
                     Map<Attribute, List<AttributeModifier>> map = MainHandAttributizer.MAP.get(e.getItemStack().getItem());
                     apply(e, map);
                 }
-                if (MainHandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
+                else if (MainHandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     apply(e, MainHandAttributizer.ARCHETYPES.get(MainHandAttributizer.CACHEMAP.get(e.getItemStack().getItem())));
-                else MainHandAttributizer.ARCHETYPES.forEach((k, v) -> {
-                    if (e.getItemStack().is(k)) {
-                        apply(e, v);
-                        MainHandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k);
-                    }
-                });
+                else
+                    MainHandAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent((k) -> {
+                        apply(e, k.getValue());
+                        MainHandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
+                    });
             }
         }
 

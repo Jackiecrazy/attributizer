@@ -2,6 +2,7 @@ package jackiecrazy.attributizer;
 
 import com.google.gson.*;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -81,7 +82,7 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                             GLOBALMAP.get(a).add(am);
                         }
                         else if(isTag){
-                            TagKey<EntityType<?>> tag= TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(name));
+                            TagKey<EntityType<?>> tag= TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(name));
                             ARCHETYPES.putIfAbsent(tag, new HashMap<>());
                             Map<Attribute, List<AttributeMod>> sub = ARCHETYPES.get(tag);
                             sub.putIfAbsent(a, new ArrayList<>());

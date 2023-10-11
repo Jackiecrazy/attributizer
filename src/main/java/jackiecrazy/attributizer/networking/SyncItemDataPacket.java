@@ -32,7 +32,7 @@ public class SyncItemDataPacket {
     private final int type;
 
     public SyncItemDataPacket(int type, Map<Item, Map<Attribute, List<AttributeModifier>>> map) {
-        this.type=type;
+        this.type = type;
         this.map = map;
     }
 
@@ -61,10 +61,10 @@ public class SyncItemDataPacket {
             //prevent client overriding server
             if (contextSupplier.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT)
                 contextSupplier.get().enqueueWork(() -> {
-                    switch(updateClientPacket.type){
-                        case 0: MainHandAttributizer.clientDataOverride(updateClientPacket.map);
-                        case 1: OffhandAttributizer.clientDataOverride(updateClientPacket.map);
-                        case 2: ArmorAttributizer.clientDataOverride(updateClientPacket.map);
+                    switch (updateClientPacket.type) {
+                        case 0 -> MainHandAttributizer.clientDataOverride(updateClientPacket.map);
+                        case 1 -> OffhandAttributizer.clientDataOverride(updateClientPacket.map);
+                        case 2 -> ArmorAttributizer.clientDataOverride(updateClientPacket.map);
                     }
                 });
             contextSupplier.get().setPacketHandled(true);

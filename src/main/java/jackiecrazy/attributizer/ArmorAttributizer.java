@@ -121,7 +121,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                         } catch (Exception ignored) {
                             //have to grab the uuid haiyaaa
                             if (item instanceof ArmorItem armor) {
-                                uid = MODIFIERS[armor.getSlot().getIndex()];
+                                uid = MODIFIERS[armor.getEquipmentSlot().getIndex()];
                             } else if (item instanceof ShieldItem) uid = MODIFIERS[5];
                             else uid = MODIFIERS[4];
                         }

@@ -15,11 +15,11 @@
   "anothermod:speed_bow":[
     {
       "attribute": "minecraft:generic.movement_speed",
-      "modify": 1,
+      "modify": 0.3,
       "operation": "ADDITION"
     }
   ],
-  "#random:heavy_object":[
+  "#mydatapack:heavy_object":[
     {
       "attribute": "minecraft:generic.knockback_resistance",
       "modify": 1,
