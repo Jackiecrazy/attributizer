@@ -62,9 +62,9 @@ public class SyncTagDataPacket {
             //prevent client overriding server
             if (contextSupplier.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT)
                 contextSupplier.get().enqueueWork(() -> {
-                    switch(updateClientPacket.type){
-                        case 0: MainHandAttributizer.clientTagOverride(updateClientPacket.map);
-                        case 1: OffhandAttributizer.clientTagOverride(updateClientPacket.map);
+                    switch (updateClientPacket.type) {
+                        case 0 -> MainHandAttributizer.clientTagOverride(updateClientPacket.map);
+                        case 1 -> OffhandAttributizer.clientTagOverride(updateClientPacket.map);
                     }
                 });
             contextSupplier.get().setPacketHandled(true);

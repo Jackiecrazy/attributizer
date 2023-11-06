@@ -1,0 +1,282 @@
+{
+  "#wardance:quarterstaff": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:buckler": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.7,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:glaive": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 2.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:sign": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.6,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:katana": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:crossbow": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.8,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 3.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:greatmace": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:spear": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 2.0,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:arbalest": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -3.2,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 4.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:bow": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.0,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 3.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:pike": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 2.5,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:longbow": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.4,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 4.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:twinblade": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:buster": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.5,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:lance": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:battleaxe": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:magestaff": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.5,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:shield": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.7,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:greatsword": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:flail": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:halberd": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 2.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:shortspear": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:rifle": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 5.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:warglaive": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -0.2,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:longsword": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:greathammer": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:towershield": [
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -3.5,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 0.5,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:launcher": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 1.0,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 5.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:handgun": [
+    {
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 3.0,
+      "operation": "ADDITION"
+    }
+  ],
+  "#wardance:chakram": [
+    {
+      "attribute": "forge:entity_reach",
+      "modify": 3.0,
+      "operation": "ADDITION"
+    }
+  ]
+}

@@ -1,0 +1,577 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "alexsmobs:shield_of_the_deep",
+      "required": false
+    },
+    {
+      "id": "ars_nouveau:enchanters_shield",
+      "required": false
+    },
+    {
+      "id": "blue_skies:moonstone_shield",
+      "required": false
+    },
+    {
+      "id": "bountifulbaubles:shield_ankh",
+      "required": false
+    },
+    {
+      "id": "bountifulbaubles:shield_cobalt",
+      "required": false
+    },
+    {
+      "id": "bountifulbaubles:shield_obsidian",
+      "required": false
+    },
+    {
+      "id": "druidcraft:bone_shield",
+      "required": false
+    },
+    {
+      "id": "druidcraft:chitin_shield",
+      "required": false
+    },
+    {
+      "id": "enigmaticlegacy:infernal_shield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:bronze_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:bronze_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:bronze_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:bronze_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:copper_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:copper_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:copper_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:copper_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:corruptedroundshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:diamond_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:diamond_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:diamond_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:diamond_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:gold_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:gold_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:gold_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:gold_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:iron_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:iron_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:iron_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:iron_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:netherite_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:netherite_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:netherite_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:netherite_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:silver_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:silver_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:silver_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:silver_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:steel_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:steel_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:steel_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:steel_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:stone_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:stone_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:stone_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:stone_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:tin_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:tin_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:tin_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:tin_tartsche",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:wood_ellipticalshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:wood_heatershield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:wood_kiteshield",
+      "required": false
+    },
+    {
+      "id": "magistuarmory:wood_tartsche",
+      "required": false
+    },
+    {
+      "id": "minecraft:shield",
+      "required": false
+    },
+    {
+      "id": "mod_lavacow:vespa_shield",
+      "required": false
+    },
+    {
+      "id": "silentgear:shield",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_bronze",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_constantan",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_copper",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_diamond",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_electrum",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_gold",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_invar",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_iron",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_lead",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_netherite",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_nickel",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_obsidian",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_platinum",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_silver",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_steel",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_stone",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_tin",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_basic_wood",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_botania_elementium",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_botania_manasteel",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_botania_terrasteel",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_mekanism_lapis_lazuli",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_mekanism_osmium",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_mekanism_refined_glowstone",
+      "required": false
+    },
+    {
+      "id": "spartanshields:shield_mekanism_refined_obsidian",
+      "required": false
+    },
+    {
+      "id": "stalwart_dungeons:chorundum_shield",
+      "required": false
+    },
+    {
+      "id": "stalwart_dungeons:tungsten_shield",
+      "required": false
+    },
+    {
+      "id": "primalmagick:primalite_shield",
+      "required": false
+    },
+    {
+      "id": "primalmagick:hexium_shield",
+      "required": false
+    },
+    {
+      "id": "primalmagick:hallowsteel_shield",
+      "required": false
+    },
+    {
+      "id": "primalmagick:sacred_shield",
+      "required": false
+    },
+    {
+      "id": "ic2:bronze_shield",
+      "required": false
+    },
+    {
+      "id": "cyclic:shield_wood",
+      "required": false
+    },
+    {
+      "id": "cyclic:shield_leather",
+      "required": false
+    },
+    {
+      "id": "cyclic:shield_flint",
+      "required": false
+    },
+    {
+      "id": "cyclic:shield_obsidian",
+      "required": false
+    },
+    {
+      "id": "cyclic:shield_bone",
+      "required": false
+    },
+    {
+      "id": "nethers_exoticism:rambutan_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:diamond_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:netherite_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:paragon_shield",
+      "required": false
+    },
+    {
+      "id": "grimoireofgaia:stone_shield",
+      "required": false
+    },
+    {
+      "id": "grimoireofgaia:iron_shield",
+      "required": false
+    },
+    {
+      "id": "grimoireofgaia:gold_shield",
+      "required": false
+    },
+    {
+      "id": "grimoireofgaia:bone_shield",
+      "required": false
+    },
+    {
+      "id": "lost_aether_content:zanite_shield",
+      "required": false
+    },
+    {
+      "id": "deep_aether:stratus_shield",
+      "required": false
+    },
+    {
+      "id": "deep_aether:skyjade_shield",
+      "required": false
+    },
+    {
+      "id": "lost_aether_content:gravitite_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:wooden_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:stone_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:golden_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:iron_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:diamond_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexex:netherite_shield",
+      "required": false
+    },
+    {
+      "id": "voidscape:voidic_crystal_shield",
+      "required": false
+    },
+    {
+      "id": "wom:gesetz",
+      "required": false
+    },
+    {
+      "id": "the_bumblezone:honey_crystal_shield",
+      "required": false
+    },
+    {
+      "id": "#minecraft:trapdoors",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_diamond",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_gold",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_iron",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_netherite",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_stone",
+      "required": false
+    },
+    {
+      "id": "ageofweapons:shield_wood",
+      "required": false
+    },
+    {
+      "id": "atum:brigand_shield",
+      "required": false
+    },
+    {
+      "id": "atum:stoneguard_shield",
+      "required": false
+    },
+    {
+      "id": "blue_skies:spike_shield",
+      "required": false
+    },
+    {
+      "id": "craftvania2:shield_rod",
+      "required": false
+    },
+    {
+      "id": "endermanoverhaul:corrupted_shield",
+      "required": false
+    },
+    {
+      "id": "joels_randoms_mod:briefcase_sword",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:diamond_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:eternium_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:gold_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:iron_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:netherite_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:poseidite_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:sculkium_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:shulkerate_round_shield",
+      "required": false
+    },
+    {
+      "id": "l2weaponry:totemic_gold_round_shield",
+      "required": false
+    },
+    {
+      "id": "lost_aether_content:shield_of_emile",
+      "required": false
+    },
+    {
+      "id": "shieldexp:golden_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:griefer_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:iron_shield",
+      "required": false
+    },
+    {
+      "id": "shieldexp:wooden_shield",
+      "required": false
+    },
+    {
+      "id": "twilightforest:knightmetal_shield",
+      "required": false
+    }
+  ]
+}

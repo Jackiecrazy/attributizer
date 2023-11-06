@@ -66,6 +66,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
     protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager rm, ProfilerFiller profiler) {
         MAP.clear();
         CACHEMAP.clear();
+        ARCHETYPES.clear();
         object.forEach((key, value) -> {
             JsonObject file = value.getAsJsonObject();
             file.entrySet().forEach(entry -> {
