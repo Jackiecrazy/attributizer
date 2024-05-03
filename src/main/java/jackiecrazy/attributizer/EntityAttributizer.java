@@ -91,8 +91,8 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                         }
                         else {
                             ResourceLocation i = new ResourceLocation(name);
-                            EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
-                            if (mob != null) {
+                            if (ForgeRegistries.ENTITY_TYPES.containsKey(i)) {
+                                EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
                                 MAP.putIfAbsent(mob, new HashMap<>());
                                 Map<Attribute, List<AttributeMod>> sub = MAP.get(mob);
                                 sub.putIfAbsent(a, new ArrayList<>());
