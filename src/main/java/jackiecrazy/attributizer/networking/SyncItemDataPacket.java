@@ -27,7 +27,7 @@ public class SyncItemDataPacket {
     }));
 
     private static final FriendlyByteBuf.Reader<Item> ritem = friendlyByteBuf -> ForgeRegistries.ITEMS.getValue(friendlyByteBuf.readResourceLocation());
-    private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> new AttributeModifier(p_179457_.readUUID(), "Unknown synced attribute modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()))));
+    private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> new AttributeModifier(p_179457_.readUUID(), "Attributizer tag modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()))));
     private final Map<Item, Map<Attribute, List<AttributeModifier>>> map;
     private final int type;
 

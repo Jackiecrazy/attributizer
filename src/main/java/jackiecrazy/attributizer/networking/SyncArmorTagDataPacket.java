@@ -34,7 +34,7 @@ public class SyncArmorTagDataPacket {
     private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier[]>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> {
         AttributeModifier[] ret = new AttributeModifier[4];
         for (int x = 0; x < ret.length; x++) {
-            ret[x] = new AttributeModifier(p_179457_.readUUID(), "Unknown synced attribute modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()));
+            ret[x] = new AttributeModifier(p_179457_.readUUID(), "Attributizer armor tag modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()));
         }
         return ret;
     }));
