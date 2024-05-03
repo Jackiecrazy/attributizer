@@ -2,20 +2,15 @@ package jackiecrazy.attributizer;
 
 import com.google.gson.*;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -82,7 +77,7 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                             GLOBALMAP.get(a).add(am);
                         }
                         else if(isTag){
-                            TagKey<EntityType<?>> tag= TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(name));
+                            TagKey<EntityType<?>> tag= TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(name));
                             ARCHETYPES.putIfAbsent(tag, new HashMap<>());
                             Map<Attribute, List<AttributeMod>> sub = ARCHETYPES.get(tag);
                             sub.putIfAbsent(a, new ArrayList<>());
@@ -91,8 +86,8 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                         }
                         else {
                             ResourceLocation i = new ResourceLocation(name);
-                            EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
-                            if (mob != null) {
+                            if (ForgeRegistries.ENTITY_TYPES.containsKey(i)) {
+                                EntityType<?> mob = ForgeRegistries.ENTITY_TYPES.getValue(i);
                                 MAP.putIfAbsent(mob, new HashMap<>());
                                 Map<Attribute, List<AttributeMod>> sub = MAP.get(mob);
                                 sub.putIfAbsent(a, new ArrayList<>());
