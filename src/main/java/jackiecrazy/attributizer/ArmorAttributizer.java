@@ -2,10 +2,10 @@ package jackiecrazy.attributizer;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
-import jackiecrazy.attributizer.networking.AttributeChannel;
 import jackiecrazy.attributizer.networking.SyncArmorTagDataPacket;
 import jackiecrazy.attributizer.networking.SyncItemDataPacket;
-import jackiecrazy.attributizer.networking.SyncTagDataPacket;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -13,53 +13,51 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
-    public static final UUID[] MODIFIERS = {
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553da"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553db"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553dc"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553dd"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553de"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
-    };
-    public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
+    public static final Map<Item, Map<Holder<Attribute>, List<AttributeModifier>>> MAP = new HashMap<>();
     public static final Map<Item, TagKey<Item>> CACHEMAP = new HashMap<>();
-    public static final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> ARCHETYPES = new HashMap<>();
+    public static final Map<TagKey<Item>, Map<Holder<Attribute>, List<List<AttributeModifier>>>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
-
-    public static void clientDataOverride(Map<Item, Map<Attribute, List<AttributeModifier>>> server) {
-        MAP.putAll(server);
-    }
-
-    public static void clientTagOverride(Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> server) {
-        ARCHETYPES.putAll(server);
-    }
-
-    public static void sendItemData(ServerPlayer p) {
-        //duplicated removed automatically
-        Set<String> paths = MAP.keySet().stream().map(a -> ForgeRegistries.ITEMS.getKey(a).getNamespace()).collect(Collectors.toSet());
-        for (String namespace : paths)
-            AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(2, Maps.filterEntries(MAP, a -> ForgeRegistries.ITEMS.getKey(a.getKey()).getNamespace().equals(namespace))));
-        //CombatChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(new HashMap<>(combatList)));
-        AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncArmorTagDataPacket(ARCHETYPES));
-    }
 
     public ArmorAttributizer() {
         super(GSON, "attributizer/armor");
     }
 
+    public static void clientDataOverride(Map<Item, Map<Holder<Attribute>, List<AttributeModifier>>> server) {
+        MAP.putAll(server);
+    }
+
+    public static void clientTagOverride(Map<TagKey<Item>, Map<Holder<Attribute>, List<List<AttributeModifier>>>> server) {
+        ARCHETYPES.putAll(server);
+    }
+
+    public static EquipmentSlot getEquipmentSlot(Item item) {
+        if (item instanceof ArmorItem armor)
+            return armor.getEquipmentSlot();
+        return item instanceof ShieldItem?EquipmentSlot.OFFHAND:EquipmentSlot.MAINHAND;
+    }
+
     public static void register(AddReloadListenerEvent event) {
         event.addListener(new ArmorAttributizer());
+    }
+
+    public static void sendItemData(ServerPlayer p) {
+        //duplicated removed automatically
+        Set<String> paths = MAP.keySet().stream().map(a -> BuiltInRegistries.ITEM.getKey(a).getNamespace()).collect(Collectors.toSet());
+        for (String namespace : paths)
+            PacketDistributor.sendToPlayer(p, new SyncItemDataPacket(2, Maps.filterEntries(MAP, a -> BuiltInRegistries.ITEM.getKey(a.getKey()).getNamespace().equals(namespace))));
+        //CombatChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(new HashMap<>(combatList)));
+        PacketDistributor.sendToPlayer(p, new SyncArmorTagDataPacket(ARCHETYPES));
     }
 
     @Override
@@ -79,9 +77,9 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                     if (!name.contains(":"))
                         name = "attributizer:" + name;
                 }
-                ResourceLocation i = new ResourceLocation(name);
-                item = ForgeRegistries.ITEMS.getValue(i);
-                if ((item == null || item == Items.AIR) && !isTag) {
+                ResourceLocation i = ResourceLocation.parse(name);
+                item = BuiltInRegistries.ITEM.get(i);
+                if (item == Items.AIR && !isTag) {
                     Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
@@ -90,46 +88,43 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                     //item
                     try {
                         JsonObject obj = e.getAsJsonObject();
-                        final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
-                        Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
-                        if (a == null) {
+                        final ResourceLocation attribute = ResourceLocation.parse(obj.get("attribute").getAsString());
+                        Optional<Holder.Reference<Attribute>> opt = BuiltInRegistries.ATTRIBUTE.getHolder(attribute);
+                        if (opt.isEmpty()) {
                             Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
+                        Holder<Attribute> a = opt.get();
 
                         double modify = obj.get("modify").getAsDouble();
                         String type = obj.get("operation").getAsString();
                         //tags
                         if (isTag) {
-                            AttributeModifier[] insert = new AttributeModifier[MODIFIERS.length];
+                            ArrayList<AttributeModifier> insert = new ArrayList<>();
                             //have to do it for every uuid haiyaa
-                            for (int b = 0; b < MODIFIERS.length; b++) {
-                                AttributeModifier am = new AttributeModifier(MODIFIERS[b], "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
-                                insert[b] = am;
+                            for (int b = 0; b < Attributizer.MODIFIERS.length; b++) {
+                                AttributeModifier am = new AttributeModifier(Attributizer.MODIFIERS[b], modify, OperationBridge.valueOf(type).translate());
+                                insert.add(am);
                             }
                             final TagKey<Item> tag = ItemTags.create(i);
                             ARCHETYPES.putIfAbsent(tag, new HashMap<>());
-                            Map<Attribute, List<AttributeModifier[]>> sub = ARCHETYPES.get(tag);
+                            Map<Holder<Attribute>, List<List<AttributeModifier>>> sub = ARCHETYPES.get(tag);
                             sub.putIfAbsent(a, new ArrayList<>());
                             sub.get(a).add(insert);
                             ARCHETYPES.put(tag, sub);
                         }
                         //grab uuid
-                        UUID uid;
+                        ResourceLocation uid;
                         try {
-                            final String u = obj.get("uuid").getAsString();
-                            uid = UUID.fromString(u);
+                            uid = ResourceLocation.parse(obj.get("resource_location").getAsString());
                         } catch (Exception ignored) {
                             //have to grab the uuid haiyaaa
-                            if (item instanceof ArmorItem armor) {
-                                uid = MODIFIERS[armor.getEquipmentSlot().getIndex()];
-                            } else if (item instanceof ShieldItem) uid = MODIFIERS[5];
-                            else uid = MODIFIERS[4];
+                            uid = Attributizer.MODIFIERS[getEquipmentSlot(item).getIndex()];
                         }
-                        AttributeModifier am = new AttributeModifier(uid, "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
+                        AttributeModifier am = new AttributeModifier(uid, modify, OperationBridge.valueOf(type).translate());
 
                         MAP.putIfAbsent(item, new HashMap<>());
-                        Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
+                        Map<Holder<Attribute>, List<AttributeModifier>> sub = MAP.get(item);
                         sub.putIfAbsent(a, new ArrayList<>());
                         sub.get(a).add(am);
                         MAP.put(item, sub);

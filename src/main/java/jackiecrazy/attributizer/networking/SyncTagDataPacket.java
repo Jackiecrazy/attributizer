@@ -1,73 +1,61 @@
 package jackiecrazy.attributizer.networking;
 
+import io.netty.buffer.ByteBuf;
 import jackiecrazy.attributizer.ArmorAttributizer;
+import jackiecrazy.attributizer.Attributizer;
 import jackiecrazy.attributizer.MainHandAttributizer;
 import jackiecrazy.attributizer.OffhandAttributizer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-public class SyncTagDataPacket {
-    private static final FriendlyByteBuf.Writer<TagKey<Item>> item = (f, item) -> f.writeResourceLocation(item.location());
-    private static final FriendlyByteBuf.Writer<Map<Attribute, List<AttributeModifier>>> info = (f, info) -> f.writeMap(info, (ff, a) -> ff.writeResourceLocation(ForgeRegistries.ATTRIBUTES.getKey(a)), (ff, b) -> ff.writeCollection(b, (fbb, am) -> {
-        fbb.writeUUID(am.getId());
-        fbb.writeDouble(am.getAmount());
-        fbb.writeByte(am.getOperation().toValue());
-    }));
+public record SyncTagDataPacket(int mapIndex,
+                                Map<TagKey<Item>, Map<Holder<Attribute>, List<AttributeModifier>>> map) implements CustomPacketPayload {
+    public static final StreamCodec<ByteBuf, TagKey<Item>> TAGS = ByteBufCodecs.STRING_UTF8
+            .map(a->TagKey.create(BuiltInRegistries.ITEM.key(), ResourceLocation.parse(a)), a->a.location().toString());
+    public static final CustomPacketPayload.Type<SyncTagDataPacket> MAIN = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Attributizer.MODID, "hand_tag"));
+    static StreamCodec<RegistryFriendlyByteBuf, Map<TagKey<Item>, Map<Holder<Attribute>, List<AttributeModifier>>>> ITEM = ByteBufCodecs.map(HashMap::new, TAGS, ByteBufCodecs.map(HashMap::new, Attribute.STREAM_CODEC, ByteBufCodecs.collection(ArrayList::new, AttributeModifier.STREAM_CODEC)));
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncTagDataPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            SyncTagDataPacket::mapIndex,
+            ITEM,
+            SyncTagDataPacket::map,
+            SyncTagDataPacket::new
+    );
 
-    private static final FriendlyByteBuf.Reader<TagKey<Item>> ritem = f -> ItemTags.create(f.readResourceLocation());;
-    private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> new AttributeModifier(p_179457_.readUUID(), "Attributizer tag modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()))));
-    private final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier>>> map;
-    private final int type;
-
-    public SyncTagDataPacket(int type, Map<TagKey<Item>, Map<Attribute, List<AttributeModifier>>> map) {
-        this.type=type;
-        this.map = map;
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return MAIN;
     }
 
-    public static class Encoder implements BiConsumer<SyncTagDataPacket, FriendlyByteBuf> {
+    public static class ClientPayloadHandler {
 
-        @Override
-        public void accept(SyncTagDataPacket packet, FriendlyByteBuf packetBuffer) {
-            packetBuffer.writeInt(packet.type);
-            packetBuffer.writeMap(packet.map, item, info);
-        }
-    }
-
-    public static class Decoder implements Function<FriendlyByteBuf, SyncTagDataPacket> {
-
-        @Override
-        public SyncTagDataPacket apply(FriendlyByteBuf packetBuffer) {
-            return new SyncTagDataPacket(packetBuffer.readInt(), packetBuffer.readMap(ritem, rinfo));
-        }
-    }
-
-    public static class Handler implements BiConsumer<SyncTagDataPacket, Supplier<NetworkEvent.Context>> {
-
-        @Override
-        public void accept(SyncTagDataPacket updateClientPacket, Supplier<NetworkEvent.Context> contextSupplier) {
-
-            //prevent client overriding server
-            if (contextSupplier.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT)
-                contextSupplier.get().enqueueWork(() -> {
-                    switch (updateClientPacket.type) {
-                        case 0 -> MainHandAttributizer.clientTagOverride(updateClientPacket.map);
-                        case 1 -> OffhandAttributizer.clientTagOverride(updateClientPacket.map);
-                    }
-                });
-            contextSupplier.get().setPacketHandled(true);
+        public static void handleData(final SyncTagDataPacket data, final IPayloadContext context) {
+            context.enqueueWork(() -> {
+                switch (data.mapIndex) {
+                    case 0 -> MainHandAttributizer.clientTagOverride(data.map);
+                    case 1 -> OffhandAttributizer.clientTagOverride(data.map);
+                }
+            }).exceptionally(e -> {
+                // Handle exception
+                context.disconnect(Component.translatable("attributizer.networking.failed", e.getMessage()));
+                return null;
+            });
         }
     }
 }

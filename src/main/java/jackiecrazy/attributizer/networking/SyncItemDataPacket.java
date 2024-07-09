@@ -1,73 +1,55 @@
 package jackiecrazy.attributizer.networking;
 
 import jackiecrazy.attributizer.ArmorAttributizer;
+import jackiecrazy.attributizer.Attributizer;
 import jackiecrazy.attributizer.MainHandAttributizer;
 import jackiecrazy.attributizer.OffhandAttributizer;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
 
-public class SyncItemDataPacket {
-    private static final FriendlyByteBuf.Writer<Item> item = (f, item) -> f.writeResourceLocation(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)));
-    private static final FriendlyByteBuf.Writer<Map<Attribute, List<AttributeModifier>>> info = (f, info) -> f.writeMap(info, (ff, a) -> ff.writeResourceLocation(ForgeRegistries.ATTRIBUTES.getKey(a)), (ff, b) -> ff.writeCollection(b, (fbb, am) -> {
-        fbb.writeUUID(am.getId());
-        fbb.writeDouble(am.getAmount());
-        fbb.writeByte(am.getOperation().toValue());
-    }));
+public record SyncItemDataPacket(int mapIndex,
+                                 Map<Item, Map<Holder<Attribute>, List<AttributeModifier>>> map) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<SyncItemDataPacket> MAIN = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Attributizer.MODID, "hand_data"));
+    static StreamCodec<RegistryFriendlyByteBuf, Map<Item, Map<Holder<Attribute>, List<AttributeModifier>>>> ITEM = ByteBufCodecs.map(HashMap::new, ByteBufCodecs.registry(BuiltInRegistries.ITEM.key()), ByteBufCodecs.map(HashMap::new, Attribute.STREAM_CODEC, ByteBufCodecs.collection(ArrayList::new, AttributeModifier.STREAM_CODEC)));
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncItemDataPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            SyncItemDataPacket::mapIndex,
+            ITEM,
+            SyncItemDataPacket::map,
+            SyncItemDataPacket::new
+    );
 
-    private static final FriendlyByteBuf.Reader<Item> ritem = friendlyByteBuf -> ForgeRegistries.ITEMS.getValue(friendlyByteBuf.readResourceLocation());
-    private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> new AttributeModifier(p_179457_.readUUID(), "Attributizer tag modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()))));
-    private final Map<Item, Map<Attribute, List<AttributeModifier>>> map;
-    private final int type;
-
-    public SyncItemDataPacket(int type, Map<Item, Map<Attribute, List<AttributeModifier>>> map) {
-        this.type = type;
-        this.map = map;
+    @Override
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return MAIN;
     }
 
-    public static class Encoder implements BiConsumer<SyncItemDataPacket, FriendlyByteBuf> {
+    public static class ClientPayloadHandler {
 
-        @Override
-        public void accept(SyncItemDataPacket packet, FriendlyByteBuf packetBuffer) {
-            packetBuffer.writeInt(packet.type);
-            packetBuffer.writeMap(packet.map, item, info);
-        }
-    }
-
-    public static class Decoder implements Function<FriendlyByteBuf, SyncItemDataPacket> {
-
-        @Override
-        public SyncItemDataPacket apply(FriendlyByteBuf packetBuffer) {
-            return new SyncItemDataPacket(packetBuffer.readInt(), packetBuffer.readMap(ritem, rinfo));
-        }
-    }
-
-    public static class Handler implements BiConsumer<SyncItemDataPacket, Supplier<NetworkEvent.Context>> {
-
-        @Override
-        public void accept(SyncItemDataPacket updateClientPacket, Supplier<NetworkEvent.Context> contextSupplier) {
-
-            //prevent client overriding server
-            if (contextSupplier.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT)
-                contextSupplier.get().enqueueWork(() -> {
-                    switch (updateClientPacket.type) {
-                        case 0 -> MainHandAttributizer.clientDataOverride(updateClientPacket.map);
-                        case 1 -> OffhandAttributizer.clientDataOverride(updateClientPacket.map);
-                        case 2 -> ArmorAttributizer.clientDataOverride(updateClientPacket.map);
-                    }
-                });
-            contextSupplier.get().setPacketHandled(true);
+        public static void handleData(final SyncItemDataPacket data, final IPayloadContext context) {
+            context.enqueueWork(() -> {
+                switch (data.mapIndex) {
+                    case 0 -> MainHandAttributizer.clientDataOverride(data.map);
+                    case 1 -> OffhandAttributizer.clientDataOverride(data.map);
+                    case 2 -> ArmorAttributizer.clientDataOverride(data.map);
+                }
+            }).exceptionally(e -> {
+                // Handle exception
+                context.disconnect(Component.translatable("attributizer.networking.failed", e.getMessage()));
+                return null;
+            });
         }
     }
 }
