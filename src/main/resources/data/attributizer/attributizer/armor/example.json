@@ -3,20 +3,20 @@
     {
       "attribute": "minecraft:generic.max_health",
       "modify": 10,
-      "operation": "ADDITION"
+      "operation": "ADD_VALUE"
     },
     {
       "attribute": "minecraft:generic.knockback_resistance",
       "modify": -0.1,
       "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
-      "operation": "MULTIPLY_TOTAL"
+      "operation": "ADD_MULTIPLIED_BASE"
     }
   ],
   "anothermod:second_helmet":[
     {
       "attribute": "minecraft:generic.max_health",
       "modify": 1,
-      "operation": "ADDITION"
+      "operation": "ADD_MULTIPLIED_TOTAL"
     }
   ]
 }
