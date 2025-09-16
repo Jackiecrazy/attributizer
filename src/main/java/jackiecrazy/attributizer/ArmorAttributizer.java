@@ -32,16 +32,16 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553de"),
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
     };
-    public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
+    public static final Map<Item, List<ItemAttributeMod>> MAP = new HashMap<>();
     public static final Map<Item, TagKey<Item>> CACHEMAP = new HashMap<>();
-    public static final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> ARCHETYPES = new HashMap<>();
+    public static final Map<TagKey<Item>, List<ItemAttributeMod[]>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
 
-    public static void clientDataOverride(Map<Item, Map<Attribute, List<AttributeModifier>>> server) {
+    public static void clientDataOverride(Map<Item, List<ItemAttributeMod>> server) {
         MAP.putAll(server);
     }
 
-    public static void clientTagOverride(Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> server) {
+    public static void clientTagOverride(Map<TagKey<Item>, List<ItemAttributeMod[]>> server) {
         ARCHETYPES.putAll(server);
     }
 
@@ -77,7 +77,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                     isTag = true;
                     name = name.substring(1);
                     if (!name.contains(":"))
-                        name = "attributizer:" + name;
+                        name = key.getNamespace()+":" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
@@ -101,18 +101,15 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                         String type = obj.get("operation").getAsString();
                         //tags
                         if (isTag) {
-                            AttributeModifier[] insert = new AttributeModifier[MODIFIERS.length];
+                            ItemAttributeMod[] insert = new ItemAttributeMod[MODIFIERS.length];
                             //have to do it for every uuid haiyaa
                             for (int b = 0; b < MODIFIERS.length; b++) {
-                                AttributeModifier am = new AttributeModifier(MODIFIERS[b], "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
+                                ItemAttributeMod am = new ItemAttributeMod(a, MODIFIERS[b], modify, ItemAttributeMod.Operation.valueOf(type));
                                 insert[b] = am;
                             }
                             final TagKey<Item> tag = ItemTags.create(i);
-                            ARCHETYPES.putIfAbsent(tag, new HashMap<>());
-                            Map<Attribute, List<AttributeModifier[]>> sub = ARCHETYPES.get(tag);
-                            sub.putIfAbsent(a, new ArrayList<>());
-                            sub.get(a).add(insert);
-                            ARCHETYPES.put(tag, sub);
+                            ARCHETYPES.putIfAbsent(tag, new ArrayList<>());
+                            ARCHETYPES.get(tag).add(insert);
                         }
                         //grab uuid
                         UUID uid;
@@ -126,13 +123,10 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                             } else if (item instanceof ShieldItem) uid = MODIFIERS[5];
                             else uid = MODIFIERS[4];
                         }
-                        AttributeModifier am = new AttributeModifier(uid, "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
+                        ItemAttributeMod am = new ItemAttributeMod(a, uid, modify, ItemAttributeMod.Operation.valueOf(type));
 
-                        MAP.putIfAbsent(item, new HashMap<>());
-                        Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
-                        sub.putIfAbsent(a, new ArrayList<>());
-                        sub.get(a).add(am);
-                        MAP.put(item, sub);
+                        MAP.putIfAbsent(item, new ArrayList<>());
+                        MAP.get(item).add(am);
                     } catch (Exception x) {
                         Attributizer.LOGGER.error("incomplete or malformed json under " + name + "!");
                         x.printStackTrace();
@@ -140,13 +134,5 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                 }
             });
         });
-    }
-
-    public static class AttributeMod {
-        public UUID uid;
-        public double mod;
-        public ResourceLocation attr;
-
-
     }
 }

@@ -1,6 +1,7 @@
 package jackiecrazy.attributizer.networking;
 
 import jackiecrazy.attributizer.ArmorAttributizer;
+import jackiecrazy.attributizer.ItemAttributeMod;
 import jackiecrazy.attributizer.MainHandAttributizer;
 import jackiecrazy.attributizer.OffhandAttributizer;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,26 +22,29 @@ import java.util.function.Supplier;
 
 public class SyncArmorTagDataPacket {
     private static final FriendlyByteBuf.Writer<TagKey<Item>> item = (f, item) -> f.writeResourceLocation(item.location());
-    private static final FriendlyByteBuf.Writer<Map<Attribute, List<AttributeModifier[]>>> info = (f, info) -> f.writeMap(info, (ff, a) -> ff.writeResourceLocation(ForgeRegistries.ATTRIBUTES.getKey(a)), (ff, b) -> ff.writeCollection(b, (fbb, al) -> {
-        for (AttributeModifier am : al) {
-            fbb.writeUUID(am.getId());
-            fbb.writeDouble(am.getAmount());
-            fbb.writeByte(am.getOperation().toValue());
+    private static final FriendlyByteBuf.Writer<List<ItemAttributeMod[]>> info = (f, info) -> f.writeCollection(info, (ff, aa) -> {
+        for(ItemAttributeMod a:aa) {
+            f.writeResourceLocation(ForgeRegistries.ATTRIBUTES.getKey(a.attribute));
+            f.writeUUID(a.uuid);
+            f.writeDouble(a.modify);
+            f.writeInt(a.operation.ordinal());
         }
-    }));
+    });
 
     private static final FriendlyByteBuf.Reader<TagKey<Item>> ritem = f -> ItemTags.create(f.readResourceLocation());
-    ;
-    private static final FriendlyByteBuf.Reader<Map<Attribute, List<AttributeModifier[]>>> rinfo = (f) -> f.readMap((ff) -> ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), (ff) -> ff.readList((p_179457_) -> {
-        AttributeModifier[] ret = new AttributeModifier[4];
-        for (int x = 0; x < ret.length; x++) {
-            ret[x] = new AttributeModifier(p_179457_.readUUID(), "Attributizer armor tag modifier", p_179457_.readDouble(), AttributeModifier.Operation.fromValue(p_179457_.readByte()));
-        }
-        return ret;
-    }));
-    private final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> map;
 
-    public SyncArmorTagDataPacket(Map<TagKey<Item>, Map<Attribute, List<AttributeModifier[]>>> map) {
+    private static final FriendlyByteBuf.Reader<List<ItemAttributeMod[]>> rinfo = (f) -> f.readList(
+            (ff) -> {
+                ItemAttributeMod[] ret = new ItemAttributeMod[4];
+                for (int x = 0; x < ret.length; x++) {
+                    ret[x] = new ItemAttributeMod(ForgeRegistries.ATTRIBUTES.getValue(ff.readResourceLocation()), ff.readUUID(), ff.readDouble(), ItemAttributeMod.Operation.values()[ff.readInt()]);
+                }
+                return ret;
+            }
+    );
+    private final Map<TagKey<Item>, List<ItemAttributeMod[]>> map;
+
+    public SyncArmorTagDataPacket(Map<TagKey<Item>, List<ItemAttributeMod[]>> map) {
         this.map = map;
     }
 

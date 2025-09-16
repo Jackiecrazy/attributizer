@@ -32,9 +32,9 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553de"),
             UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
     };
-    public static final Map<Item, Map<Attribute, List<AttributeModifier>>> MAP = new HashMap<>();
+    public static final Map<Item, List<ItemAttributeMod>> MAP = new HashMap<>();
     public static final Map<Item, TagKey<Item>> CACHEMAP = new HashMap<>();
-    public static final Map<TagKey<Item>, Map<Attribute, List<AttributeModifier>>> ARCHETYPES = new HashMap<>();
+    public static final Map<TagKey<Item>, List<ItemAttributeMod>> ARCHETYPES = new HashMap<>();
     public static Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer()).create();
 
     public OffhandAttributizer() {
@@ -45,11 +45,11 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
         event.addListener(new OffhandAttributizer());
     }
 
-    public static void clientDataOverride(Map<Item, Map<Attribute, List<AttributeModifier>>> server) {
+    public static void clientDataOverride(Map<Item, List<ItemAttributeMod>> server) {
         MAP.putAll(server);
     }
 
-    public static void clientTagOverride(Map<TagKey<Item>, Map<Attribute, List<AttributeModifier>>> server) {
+    public static void clientTagOverride(Map<TagKey<Item>, List<ItemAttributeMod>> server) {
         ARCHETYPES.putAll(server);
     }
 
@@ -77,7 +77,7 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                     isTag = true;
                     name = name.substring(1);
                     if (!name.contains(":"))
-                        name = "attributizer:" + name;
+                        name = key.getNamespace()+":" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
@@ -107,20 +107,14 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                             uid = MODIFIERS[5];
                         }
 
-                        AttributeModifier am = new AttributeModifier(uid, "attributizer change", modify, AttributeModifier.Operation.valueOf(type));
+                        ItemAttributeMod am = new ItemAttributeMod(a, uid, modify, ItemAttributeMod.Operation.valueOf(type));
                         if(isTag){
                             final TagKey<Item> tag = ItemTags.create(i);
-                            ARCHETYPES.putIfAbsent(tag, new HashMap<>());
-                            Map<Attribute, List<AttributeModifier>> sub = ARCHETYPES.get(tag);
-                            sub.putIfAbsent(a, new ArrayList<>());
-                            sub.get(a).add(am);
-                            ARCHETYPES.put(tag, sub);
+                            ARCHETYPES.putIfAbsent(tag, new ArrayList<>());
+                            ARCHETYPES.get(tag).add(am);
                         }else {
-                            MAP.putIfAbsent(item, new HashMap<>());
-                            Map<Attribute, List<AttributeModifier>> sub = MAP.get(item);
-                            sub.putIfAbsent(a, new ArrayList<>());
-                            sub.get(a).add(am);
-                            MAP.put(item, sub);
+                            MAP.putIfAbsent(item, new ArrayList<>());
+                            MAP.get(item).add(am);
                         }
                     } catch (Exception x) {
                         Attributizer.LOGGER.error("incomplete or malformed json under " + name + "!");
@@ -129,13 +123,5 @@ public class OffhandAttributizer extends SimpleJsonResourceReloadListener {
                 }
             });
         });
-    }
-
-    public static class AttributeMod {
-        public UUID uid;
-        public double mod;
-        public ResourceLocation attr;
-
-
     }
 }

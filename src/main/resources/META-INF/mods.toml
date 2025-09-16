@@ -64,3 +64,10 @@ mandatory = true
 versionRange = "[1.20.1, 1.20.2)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.attributizer]]
+modId="curios"
+mandatory=false
+versionRange="[1.19.2-5.1.4.1,)"
+ordering="AFTER"
+side="BOTH"

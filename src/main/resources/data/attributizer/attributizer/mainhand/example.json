@@ -1,5 +1,5 @@
 {
-  "modid:angry_sword":[
+  "modid:angry_sword": [
     {
       "attribute": "minecraft:generic.attack_damage",
       "modify": 10,
@@ -12,18 +12,23 @@
       "operation": "MULTIPLY_TOTAL"
     }
   ],
-  "anothermod:speed_bow":[
+  "anothermod:speed_bow": [
     {
       "attribute": "minecraft:generic.movement_speed",
       "modify": 0.3,
       "operation": "ADDITION"
     }
   ],
-  "#mydatapack:heavy_object":[
+  "#mydatapack:overpowered_swords": [
     {
-      "attribute": "minecraft:generic.knockback_resistance",
-      "modify": 1,
-      "operation": "MULTIPLY_BASE"
+      "attribute": "minecraft:generic.attack_damage",
+      "modify": 6,
+      "operation": "EQUALIZE"
+    },
+    {
+      "attribute": "minecraft:generic.attack_speed",
+      "modify": -2.4,
+      "operation": "EQUALIZE"
     }
   ]
 }

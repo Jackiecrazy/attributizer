@@ -1,0 +1,22 @@
+{
+  "randommod:weird_ring": [
+    {
+      "attribute": "minecraft:generic.armor",
+      "modify": 10,
+      "operation": "ADDITION"
+    },
+    {
+      "attribute": "minecraft:generic.armor",
+      "modify": -0.5,
+      "uuid": "a516026a-bee2-4014-bcb6-b6a5775553de",
+      "operation": "MULTIPLY_TOTAL"
+    }
+  ],
+  "#datapack:fast": [
+    {
+      "attribute": "minecraft:generic.movement_speed",
+      "modify": 0.3,
+      "operation": "ADDITION"
+    }
+  ]
+}

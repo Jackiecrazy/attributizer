@@ -1,7 +1,9 @@
-package jackiecrazy.attributizer;
+package jackiecrazy.attributizer.curio;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
+import jackiecrazy.attributizer.Attributizer;
+import jackiecrazy.attributizer.ItemAttributeMod;
 import jackiecrazy.attributizer.networking.AttributeChannel;
 import jackiecrazy.attributizer.networking.SyncItemDataPacket;
 import jackiecrazy.attributizer.networking.SyncTagDataPacket;
@@ -13,26 +15,17 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
-import jackiecrazy.attributizer.ItemAttributeMod;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
-    public static final UUID[] MODIFIERS = {
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553da"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553db"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553dc"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553dd"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553de"),
-            UUID.fromString("a516026a-bee2-4014-bcb6-b6a5775553df")
-    };
+public class CurioAttributizer extends SimpleJsonResourceReloadListener {
+    public static final UUID MODIFIERS = UUID.fromString("a516026a-bee2-4014-bce6-b6a5775553df");
     public static final Map<Item, List<ItemAttributeMod>> MAP = new HashMap<>();
     public static final Map<Item, TagKey<Item>> CACHEMAP = new HashMap<>();
     public static final Map<TagKey<Item>, List<ItemAttributeMod>> ARCHETYPES = new HashMap<>();
@@ -48,19 +41,19 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
         for (String namespace : paths)
             AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(0, Maps.filterEntries(MAP, a -> ForgeRegistries.ITEMS.getKey(a.getKey()).getNamespace().equals(namespace))));
         //CombatChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(new HashMap<>(combatList)));
-        AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncTagDataPacket(0, ARCHETYPES));
+        AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncTagDataPacket(2, ARCHETYPES));
     }
 
     public static void clientTagOverride(Map<TagKey<Item>, List<ItemAttributeMod>> server) {
         ARCHETYPES.putAll(server);
     }
 
-    public MainHandAttributizer() {
-        super(GSON, "attributizer/mainhand");
+    public CurioAttributizer() {
+        super(GSON, "attributizer/curios");
     }
 
     public static void register(AddReloadListenerEvent event) {
-        event.addListener(new MainHandAttributizer());
+        event.addListener(new CurioAttributizer());
     }
 
     @Override
@@ -78,7 +71,7 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                     isTag = true;
                     name = name.replace('#', ' ').trim();
                     if (!name.contains(":"))
-                        name = key.getNamespace()+":" + name;//fixme wizard staff???
+                        name = key.getNamespace()+":" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
@@ -105,7 +98,7 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                             uid = UUID.fromString(u);
                         } catch (Exception ignored) {
                             //have to grab the uuid haiyaaa
-                            uid = MODIFIERS[4];
+                            uid = MODIFIERS;
                         }
 
                         ItemAttributeMod am = new ItemAttributeMod(a, uid, modify, ItemAttributeMod.Operation.valueOf(type));

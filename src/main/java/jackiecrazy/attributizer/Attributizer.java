@@ -1,10 +1,13 @@
 package jackiecrazy.attributizer;
 
 import com.mojang.logging.LogUtils;
+import jackiecrazy.attributizer.curio.CurioAttributizer;
+import jackiecrazy.attributizer.curio.CurioEventHandler;
 import jackiecrazy.attributizer.networking.AttributeChannel;
 import jackiecrazy.attributizer.networking.SyncArmorTagDataPacket;
 import jackiecrazy.attributizer.networking.SyncItemDataPacket;
 import jackiecrazy.attributizer.networking.SyncTagDataPacket;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,8 +25,10 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
@@ -42,8 +47,14 @@ public class Attributizer {
 
     public Attributizer() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private void processIMC(final InterModProcessEvent event) {
+        if ( ModList.get().isLoaded("curios"))
+            MinecraftForge.EVENT_BUS.register(CurioEventHandler.class);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -63,6 +74,7 @@ public class Attributizer {
             MainHandAttributizer.register(event);
             OffhandAttributizer.register(event);
             EntityAttributizer.register(event);
+            CurioAttributizer.register(event);
         }
 
         @SubscribeEvent
@@ -71,6 +83,7 @@ public class Attributizer {
                 MainHandAttributizer.sendItemData(sp);
                 OffhandAttributizer.sendItemData(sp);
                 ArmorAttributizer.sendItemData(sp);
+                CurioAttributizer.sendItemData(sp);
             }
         }
 
@@ -80,6 +93,7 @@ public class Attributizer {
                 MainHandAttributizer.sendItemData(sp);
                 OffhandAttributizer.sendItemData(sp);
                 ArmorAttributizer.sendItemData(sp);
+                CurioAttributizer.sendItemData(sp);
             }
         }
 
@@ -112,6 +126,9 @@ public class Attributizer {
                         }));
                     }
                 });
+                if (elb.getHealth() > elb.getMaxHealth())
+                    elb.setHealth(elb.getMaxHealth());
+
             }
         }
 
@@ -121,47 +138,49 @@ public class Attributizer {
             //armor
             if ((!e.getOriginalModifiers().isEmpty())) {
                 if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem())) {//presumably this is the correct equipment slot
-                    Map<Attribute, List<AttributeModifier>> map = ArmorAttributizer.MAP.get(e.getItemStack().getItem());
+                    List<ItemAttributeMod> map = ArmorAttributizer.MAP.get(e.getItemStack().getItem());
                     apply(e, map);
                 }
                 //tag based armor
                 else if (ArmorAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     ArmorAttributizer.CACHEMAP.computeIfPresent(e.getItemStack().getItem(), (item, tag) -> {
                         ArmorAttributizer.ARCHETYPES.computeIfPresent(tag, (tag1, attr) -> {
-                                    attr.forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
-                                    return attr;
-                                }
+                                                                          attr.forEach(a -> a[e.getSlotType().getIndex()].applyModifier(e));
+                                                                          return attr;
+                                                                      }
                         );
                         return tag;
                     });
-                else ArmorAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
-                    if (e.getItemStack().is(k.getKey())) {
-                        k.getValue().forEach((l, m) -> m.forEach(am -> e.addModifier(l, am[e.getSlotType().getIndex()])));
-                        ArmorAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
-                    }
-                });
+                else
+                    ArmorAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
+                        if (e.getItemStack().is(k.getKey())) {
+                            k.getValue().forEach((l) -> l[e.getSlotType().getIndex()].applyModifier(e));
+                            ArmorAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
+                        }
+                    });
             }
+            //offhand
             if ((e.getSlotType() == EquipmentSlot.OFFHAND)) {
                 if (OffhandAttributizer.MAP.containsKey(e.getItemStack().getItem())) {//presumably this is the correct equipment slot
-                    Map<Attribute, List<AttributeModifier>> map = OffhandAttributizer.MAP.get(e.getItemStack().getItem());
+                    List<ItemAttributeMod> map = OffhandAttributizer.MAP.get(e.getItemStack().getItem());
                     apply(e, map);
-                }
-                else if (OffhandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
+                } else if (OffhandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     apply(e,
-                            OffhandAttributizer.ARCHETYPES.get(
-                            OffhandAttributizer.CACHEMAP.get(
-                                    e.getItemStack().getItem())));
-                else OffhandAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
-                    apply(e, k.getValue());
-                    OffhandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
-                });
+                          OffhandAttributizer.ARCHETYPES.get(
+                                  OffhandAttributizer.CACHEMAP.get(
+                                          e.getItemStack().getItem())));
+                else
+                    OffhandAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent(k -> {
+                        apply(e, k.getValue());
+                        OffhandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
+                    });
             }
+            //mainhand
             if ((e.getSlotType() == EquipmentSlot.MAINHAND)) {
                 if (MainHandAttributizer.MAP.containsKey(e.getItemStack().getItem())) {//presumably this is the correct equipment slot
-                    Map<Attribute, List<AttributeModifier>> map = MainHandAttributizer.MAP.get(e.getItemStack().getItem());
+                    List<ItemAttributeMod> map = MainHandAttributizer.MAP.get(e.getItemStack().getItem());
                     apply(e, map);
-                }
-                else if (MainHandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
+                } else if (MainHandAttributizer.CACHEMAP.containsKey(e.getItemStack().getItem()))
                     apply(e, MainHandAttributizer.ARCHETYPES.get(MainHandAttributizer.CACHEMAP.get(e.getItemStack().getItem())));
                 else
                     MainHandAttributizer.ARCHETYPES.entrySet().stream().filter(k -> e.getItemStack().is(k.getKey())).findFirst().ifPresent((k) -> {
@@ -171,8 +190,9 @@ public class Attributizer {
             }
         }
 
-        private static void apply(ItemAttributeModifierEvent e, Map<Attribute, List<AttributeModifier>> map) {
-            map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
+        private static void apply(ItemAttributeModifierEvent e, List<ItemAttributeMod> map) {
+            map.forEach(a -> a.applyModifier(e));
+            //map.forEach((k, v) -> v.forEach(am -> e.addModifier(k, am)));
         }
     }
 }

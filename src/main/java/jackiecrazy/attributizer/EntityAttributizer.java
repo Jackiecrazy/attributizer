@@ -48,7 +48,7 @@ public class EntityAttributizer extends SimpleJsonResourceReloadListener {
                     isTag = true;
                     name = name.substring(1);
                     if (!name.contains(":"))
-                        name = "attributizer:" + name;
+                        name = key.getNamespace()+":" + name;
                 }
                 JsonArray array = entry.getValue().getAsJsonArray();
                 for (JsonElement e : array) {
