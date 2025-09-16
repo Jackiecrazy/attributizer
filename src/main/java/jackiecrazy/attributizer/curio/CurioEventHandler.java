@@ -1,13 +1,16 @@
 package jackiecrazy.attributizer.curio;
 
+import jackiecrazy.attributizer.Attributizer;
 import jackiecrazy.attributizer.ItemAttributeMod;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.event.CurioAttributeModifierEvent;
 
 import java.util.List;
 import java.util.Objects;
 
+@Mod.EventBusSubscriber(modid = Attributizer.MODID)
 public class CurioEventHandler {
     @SubscribeEvent
     public static void handle(CurioAttributeModifierEvent e) {
