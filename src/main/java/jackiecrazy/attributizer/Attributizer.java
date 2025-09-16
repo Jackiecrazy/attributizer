@@ -53,7 +53,7 @@ public class Attributizer {
     }
 
     private void processIMC(final InterModProcessEvent event) {
-        if ( ModList.get().isLoaded("curios"))
+        if (ModList.get().isLoaded("curios"))
             MinecraftForge.EVENT_BUS.register(CurioEventHandler.class);
     }
 
