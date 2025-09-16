@@ -10,7 +10,6 @@ import top.theillusivec4.curios.api.event.CurioAttributeModifierEvent;
 import java.util.List;
 import java.util.Objects;
 
-@Mod.EventBusSubscriber(modid = Attributizer.MODID)
 public class CurioEventHandler {
     @SubscribeEvent
     public static void handle(CurioAttributeModifierEvent e) {
