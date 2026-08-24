@@ -3,12 +3,12 @@ package jackiecrazy.attributizer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 public enum OperationBridge {
-    ADD_VALUE(AttributeModifier.Operation.ADD_VALUE),
-    ADD_MULTIPLIED_BASE(AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-    ADD_MULTIPLIED_TOTAL(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
-    ADDITION(AttributeModifier.Operation.ADD_VALUE),
-    MULTIPLY_BASE(AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-    MULTIPLY_TOTAL(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    ADD_VALUE(AttributeModifier.Operation.ADDITION),
+    ADD_MULTIPLIED_BASE(AttributeModifier.Operation.MULTIPLY_BASE),
+    ADD_MULTIPLIED_TOTAL(AttributeModifier.Operation.MULTIPLY_TOTAL),
+    ADDITION(AttributeModifier.Operation.ADDITION),
+    MULTIPLY_BASE(AttributeModifier.Operation.MULTIPLY_BASE),
+    MULTIPLY_TOTAL(AttributeModifier.Operation.MULTIPLY_TOTAL);
 
     private AttributeModifier.Operation actual;
     private OperationBridge(AttributeModifier.Operation translate) {

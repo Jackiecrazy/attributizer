@@ -39,7 +39,7 @@ public class CurioAttributizer extends SimpleJsonResourceReloadListener {
         //duplicated removed automatically
         Set<String> paths = MAP.keySet().stream().map(a -> ForgeRegistries.ITEMS.getKey(a).getNamespace()).collect(Collectors.toSet());
         for (String namespace : paths)
-            AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(0, Maps.filterEntries(MAP, a -> ForgeRegistries.ITEMS.getKey(a.getKey()).getNamespace().equals(namespace))));
+            AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(3, Maps.filterEntries(MAP, a -> ForgeRegistries.ITEMS.getKey(a.getKey()).getNamespace().equals(namespace))));
         //CombatChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncItemDataPacket(new HashMap<>(combatList)));
         AttributeChannel.INSTANCE.send(PacketDistributor.PLAYER.with(() -> p), new SyncTagDataPacket(2, ARCHETYPES));
     }
@@ -75,7 +75,7 @@ public class CurioAttributizer extends SimpleJsonResourceReloadListener {
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
-                if (!isTag && (item == null || item == Items.AIR)) {
+                if (!isTag && !ForgeRegistries.ITEMS.containsKey(i)) {
                     //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
@@ -86,7 +86,7 @@ public class CurioAttributizer extends SimpleJsonResourceReloadListener {
                         final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
                         Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
                         if (a == null) {
-                            Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
+                            //Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
 

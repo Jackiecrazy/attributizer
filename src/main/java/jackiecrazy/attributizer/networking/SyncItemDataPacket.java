@@ -4,6 +4,7 @@ import jackiecrazy.attributizer.ArmorAttributizer;
 import jackiecrazy.attributizer.ItemAttributeMod;
 import jackiecrazy.attributizer.MainHandAttributizer;
 import jackiecrazy.attributizer.OffhandAttributizer;
+import jackiecrazy.attributizer.curio.CurioAttributizer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -72,6 +73,7 @@ public class SyncItemDataPacket {
                         case 0 -> MainHandAttributizer.clientDataOverride(updateClientPacket.map);
                         case 1 -> OffhandAttributizer.clientDataOverride(updateClientPacket.map);
                         case 2 -> ArmorAttributizer.clientDataOverride(updateClientPacket.map);
+                        case 3 -> CurioAttributizer.clientDataOverride(updateClientPacket.map);
                     }
                 });
             contextSupplier.get().setPacketHandled(true);

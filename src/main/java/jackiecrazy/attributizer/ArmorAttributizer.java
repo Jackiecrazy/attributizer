@@ -81,8 +81,8 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
-                if ((item == null || item == Items.AIR) && !isTag) {
-                    Attributizer.LOGGER.debug(name + " is not a registered item!");
+                if (!ForgeRegistries.ITEMS.containsKey(i) && !isTag) {
+                    //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
                 JsonArray array = entry.getValue().getAsJsonArray();
@@ -93,7 +93,7 @@ public class ArmorAttributizer extends SimpleJsonResourceReloadListener {
                         final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
                         Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
                         if (a == null) {
-                            Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
+                            //Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
 

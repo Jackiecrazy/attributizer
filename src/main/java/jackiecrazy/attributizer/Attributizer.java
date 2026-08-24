@@ -7,30 +7,27 @@ import jackiecrazy.attributizer.networking.AttributeChannel;
 import jackiecrazy.attributizer.networking.SyncArmorTagDataPacket;
 import jackiecrazy.attributizer.networking.SyncItemDataPacket;
 import jackiecrazy.attributizer.networking.SyncTagDataPacket;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -134,7 +131,6 @@ public class Attributizer {
 
         @SubscribeEvent
         public static void items(ItemAttributeModifierEvent e) {
-            if (e.getItemStack().isEmpty()) return;
             //armor
             if ((!e.getOriginalModifiers().isEmpty())) {
                 if (ArmorAttributizer.MAP.containsKey(e.getItemStack().getItem())) {//presumably this is the correct equipment slot
@@ -187,6 +183,29 @@ public class Attributizer {
                         apply(e, k.getValue());
                         MainHandAttributizer.CACHEMAP.put(e.getItemStack().getItem(), k.getKey());
                     });
+            }
+        }
+
+        @SubscribeEvent
+        public static void unarmed(LivingEquipmentChangeEvent lec){
+            if(lec.getTo().isEmpty()!=lec.getFrom().isEmpty()){
+                List<ItemAttributeMod> map=null;
+                switch (lec.getSlot()){
+                    case MAINHAND:
+                        map=MainHandAttributizer.MAP.get(ItemStack.EMPTY.getItem());
+                        break;
+                    case OFFHAND:
+                        map=OffhandAttributizer.MAP.get(ItemStack.EMPTY.getItem());
+                        break;
+                    default:
+                        map=MainHandAttributizer.MAP.get(ItemStack.EMPTY.getItem());
+                        break;
+                }
+                if(map!=null){
+                    if(lec.getTo().isEmpty())
+                    map.forEach(a->a.applyModifier(lec.getEntity()));
+                    else map.forEach(a->a.eraseModifiers(lec.getEntity()));
+                }
             }
         }
 

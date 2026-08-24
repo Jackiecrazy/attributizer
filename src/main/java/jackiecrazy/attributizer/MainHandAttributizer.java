@@ -78,11 +78,11 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                     isTag = true;
                     name = name.replace('#', ' ').trim();
                     if (!name.contains(":"))
-                        name = key.getNamespace()+":" + name;//fixme wizard staff???
+                        name = key.getNamespace()+":" + name;
                 }
                 ResourceLocation i = new ResourceLocation(name);
                 item = ForgeRegistries.ITEMS.getValue(i);
-                if (!isTag && (item == null || item == Items.AIR)) {
+                if (!isTag && !ForgeRegistries.ITEMS.containsKey(i)) {
                     //Attributizer.LOGGER.debug(name + " is not a registered item!");
                     return;
                 }
@@ -93,7 +93,7 @@ public class MainHandAttributizer extends SimpleJsonResourceReloadListener {
                         final ResourceLocation attribute = new ResourceLocation(obj.get("attribute").getAsString());
                         Attribute a = ForgeRegistries.ATTRIBUTES.getValue(attribute);
                         if (a == null) {
-                            Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
+                            //Attributizer.LOGGER.debug(attribute + " is not a registered attribute!");
                             continue;
                         }
 

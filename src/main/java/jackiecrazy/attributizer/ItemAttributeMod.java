@@ -1,6 +1,8 @@
 package jackiecrazy.attributizer;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
@@ -48,6 +50,18 @@ public class ItemAttributeMod {
             i.addModifier(attribute, am);
         }
 
+    }
+
+    public void applyModifier(LivingEntity le) {
+        final AttributeInstance inst = le.getAttribute(attribute);
+        if (inst != null)
+            inst.addTransientModifier(new AttributeModifier(uuid, "attributizer change", modify, operation == Operation.EQUALIZE ? AttributeModifier.Operation.ADDITION : AttributeModifier.Operation.valueOf(operation.name())));
+    }
+
+    public void eraseModifiers(LivingEntity from) {
+        final AttributeInstance attr = from.getAttribute(attribute);
+        if (attr != null)
+            attr.removeModifier(uuid);
     }
 
     public enum Operation {
